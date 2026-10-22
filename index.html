@@ -276,10 +276,10 @@ function updateOverallScore(){
  $("score").value=avg===null?"":avg.toFixed(1);
  $("scoreDisplay").textContent=avg===null?"— / 5":avg.toFixed(1)+" / 5";
 }
-function initRatings(){ $("ratings").innerHTML=CATS.map((c,i)=>`<div class="rating-row field"><label>${c}</label><div class="rating-dots" role="radiogroup" aria-label="${c}">${[1,2,3,4,5].map(n=>`<label title="${n}点"><input type="radio" name="r${i}" id="r${i}_${n}" value="${n}"><span>●</span></label>`).join("")}<button type="button" class="clear-rating" data-rating="${i}" title="評価をクリア">×</button></div></div>`).join("");document.querySelectorAll('.rating-dots input').forEach(r=>r.addEventListener('change',updateOverallScore));document.querySelectorAll(".clear-rating").forEach(b=>b.onclick=()=>{document.querySelectorAll(`input[name="r${b.dataset.rating}"]`).forEach(x=>x.checked=false);updateOverallScore()})}
+function initRatings(){ if($("ratings"))if($("ratings"))$("ratings").innerHTML=CATS.map((c,i)=>`<div class="rating-row field"><label>${c}</label><div class="rating-dots" role="radiogroup" aria-label="${c}">${[1,2,3,4,5].map(n=>`<label title="${n}点"><input type="radio" name="r${i}" id="r${i}_${n}" value="${n}"><span>●</span></label>`).join("")}<button type="button" class="clear-rating" data-rating="${i}" title="評価をクリア">×</button></div></div>`).join("");document.querySelectorAll('.rating-dots input').forEach(r=>r.addEventListener('change',updateOverallScore));document.querySelectorAll(".clear-rating").forEach(b=>b.onclick=()=>{document.querySelectorAll(`input[name="r${b.dataset.rating}"]`).forEach(x=>x.checked=false);updateOverallScore()})}
 function page(name){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));$(name).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="library"||name==="favorites")renderAll();window.scrollTo(0,0)}
 document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>page(b.dataset.page)));
-function resetForm(){ $("gameForm").reset();$("gameId").value="";document.querySelectorAll('.rating-dots input').forEach(x=>x.checked=false);updateOverallScore();$("editorTitle").textContent="作品を登録";selectedTags=[];renderTags();$("characterEntries").innerHTML="";addCharacterEntry();$("newBrandWrap").classList.add("hidden");$("newTagWrap").classList.add("hidden")}
+function resetForm(){ $("gameForm").reset();$("gameId").value="";document.querySelectorAll('.rating-dots input').forEach(x=>x.checked=false);updateOverallScore();$("editorTitle").textContent="作品を登録";selectedTags=[];renderTags();if($("characterEntries"))if($("characterEntries"))$("characterEntries").innerHTML="";addCharacterEntry();$("newBrandWrap").classList.add("hidden");$("newTagWrap").classList.add("hidden")}
 function getForm(){return {id:$("gameId").value||crypto.randomUUID(),title:$("title").value.trim(),brand:$("brand").value.trim(),platform:$("platform").value.trim(),year:$("year").value.trim(),purchase:$("purchase").value,status:$("status").value,startDate:$("startDate").value,clearDate:$("clearDate").value,url:$("url").value.trim(),tags:$("tags").value.split(",").map(x=>x.trim()).filter(Boolean),score:$("score").value,ratings:CATS.map((c,i)=>({name:c,value:(document.querySelector(`input[name="r${i}"]:checked`)||{}).value||""})),summary:$("summary").value,good:$("good").value,bad:$("bad").value,overall:$("overall").value,characters:collectCharacters(),spoilers:$("spoilers").value,updated:new Date().toISOString()}}
 $("saveGame").addEventListener("click",()=>{
   try {
@@ -301,21 +301,21 @@ $("addCharacter").addEventListener("click",()=>addCharacterEntry());
 function card(g){return `<article class="card"><div class="eyebrow">${esc(g.brand||"UNBRANDED")} · ${esc(g.platform||"PLATFORM N/A")}</div><h3>${esc(g.title)}</h3><div class="score">${g.score?esc(g.score)+" / 5":"— / 5"}</div><p>${esc(g.summary||"総評はまだありません。")}</p><p><span class="tag">${esc(g.status)}</span>${(g.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</p><div class="actions"><button onclick="openDetail('${g.id}')">レビューを開く</button><button onclick="editGame('${g.id}')">編集</button><button class="danger" onclick="deleteGame('${g.id}')">削除</button></div></article>`}
 window.deleteGame=id=>{const g=games.find(x=>x.id===id);if(!g)return;if(!confirm(`「${g.title}」の記録を削除しますか？\nこの操作は元に戻せません。`))return;games=games.filter(x=>x.id!==id);save();if(currentDetail===id){currentDetail=null;page("library")} };
 function renderAll(){
-if($("stats"))$("stats").innerHTML=`<span>作品数　<strong>${games.length}</strong></span><span>レビュー済み　<strong>${games.filter(g=>g.score).length}</strong></span><span>クリア済み　<strong>${games.filter(g=>["コンプリート"].includes(g.status)).length}</strong></span>`;
-if($("recent"))$("recent").innerHTML=games.slice(0,3).map(card).join("")||'<div class="empty">まだ作品がありません。最初の1本を登録しよう。</div>';
+if($("stats"))if($("stats"))if($("stats"))$("stats").innerHTML=`<span>作品数　<strong>${games.length}</strong></span><span>レビュー済み　<strong>${games.filter(g=>g.score).length}</strong></span><span>クリア済み　<strong>${games.filter(g=>["コンプリート"].includes(g.status)).length}</strong></span>`;
+if($("recent"))if($("recent"))if($("recent"))$("recent").innerHTML=games.slice(0,3).map(card).join("")||'<div class="empty">まだ作品がありません。最初の1本を登録しよう。</div>';
 let q=($("search")?.value||"").toLowerCase(),st=$("statusFilter")?.value||"",sort=$("sort")?.value||"new";
 let list=games.filter(g=>(!st||g.status===st)&&[g.title,g.brand,g.platform,g.characters,(g.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
 if(sort==="title")list.sort((a,b)=>a.title.localeCompare(b.title,"ja"));if(sort==="score")list.sort((a,b)=>(b.score||0)-(a.score||0));
-$("libraryList").innerHTML=list.map(card).join("")||'<div class="empty">該当する作品がありません。</div>';
+if($("libraryList"))if($("libraryList"))$("libraryList").innerHTML=list.map(card).join("")||'<div class="empty">該当する作品がありません。</div>';
 let fav=[];games.forEach(g=>(g.characters||"").split(/\n/).forEach(line=>{if(/^[♥♡]\s*/.test(line))fav.push({g,line:line.replace(/^[♥♡]\s*/,"")})}));
-$("favList").innerHTML=fav.map(f=>`<article class="card"><div class="eyebrow">${esc(f.g.title)}</div><h3 class="heart">♥ ${esc(f.line.slice(0,120))}</h3></article>`).join("")||'<div class="empty">キャラクター記録の♡ボタンを押すと、ここに表示されます。</div>';
-const brands=[...new Set(games.map(g=>g.brand).filter(Boolean))];$("brands").innerHTML=brands.map(b=>`<option value="${esc(b)}">`).join("");
+if($("favList"))if($("favList"))$("favList").innerHTML=fav.map(f=>`<article class="card"><div class="eyebrow">${esc(f.g.title)}</div><h3 class="heart">♥ ${esc(f.line.slice(0,120))}</h3></article>`).join("")||'<div class="empty">キャラクター記録の♡ボタンを押すと、ここに表示されます。</div>';
+const brands=[...new Set(games.map(g=>g.brand).filter(Boolean))];if($("brands"))if($("brands"))$("brands").innerHTML=brands.map(b=>`<option value="${esc(b)}">`).join("");
 }
 ["search","statusFilter","sort"].forEach(id=>$(id).addEventListener("input",renderAll));
 window.openDetail=id=>{const g=games.find(x=>x.id===id);if(!g)return;currentDetail=id;
-$("detailContent").innerHTML=`<h1>${esc(g.title)}</h1><p class="muted">${esc(g.brand)} · ${esc(g.platform)} · ${esc(g.status)} ${g.year?"· "+esc(g.year):""}</p><div class="panel"><div class="eyebrow">OVERALL RATING</div><h2>${g.score?esc(g.score)+" / 5":"未評価"}</h2><p>${esc(g.summary)}</p><hr class="rule"><h2>Ⅰ　作品全体</h2>${g.ratings.map(r=>`<p>${esc(r.name)}：${r.value?esc(r.value)+"/5":"未評価"}</p>`).join("")}<h3>良かった点</h3><p>${esc(g.good)}</p><h3>気になった点</h3><p>${esc(g.bad)}</p><h3>全体の感想</h3><p>${esc(g.overall)}</p><details><summary>ネタバレ感想を表示</summary><p style="white-space:pre-wrap">${esc(g.spoilers)}</p></details><hr class="rule"><h2>Ⅱ　キャラクター・声優</h2><p style="white-space:pre-wrap">${esc(g.characters)}</p></div>`;
+if($("detailContent"))if($("detailContent"))$("detailContent").innerHTML=`<h1>${esc(g.title)}</h1><p class="muted">${esc(g.brand)} · ${esc(g.platform)} · ${esc(g.status)} ${g.year?"· "+esc(g.year):""}</p><div class="panel"><div class="eyebrow">OVERALL RATING</div><h2>${g.score?esc(g.score)+" / 5":"未評価"}</h2><p>${esc(g.summary)}</p><hr class="rule"><h2>Ⅰ　作品全体</h2>${g.ratings.map(r=>`<p>${esc(r.name)}：${r.value?esc(r.value)+"/5":"未評価"}</p>`).join("")}<h3>良かった点</h3><p>${esc(g.good)}</p><h3>気になった点</h3><p>${esc(g.bad)}</p><h3>全体の感想</h3><p>${esc(g.overall)}</p><details><summary>ネタバレ感想を表示</summary><p style="white-space:pre-wrap">${esc(g.spoilers)}</p></details><hr class="rule"><h2>Ⅱ　キャラクター・声優</h2><p style="white-space:pre-wrap">${esc(g.characters)}</p></div>`;
 page("detail")};
-window.editGame=id=>{const g=games.find(x=>x.id===id);if(!g)return;resetForm();refreshOptions();Object.entries({gameId:"id",title:"title",brand:"brand",platform:"platform",year:"year",purchase:"purchase",status:"status",startDate:"startDate",clearDate:"clearDate",url:"url",summary:"summary",good:"good",bad:"bad",overall:"overall",characters:"characters",spoilers:"spoilers"}).forEach(([field,key])=>$(field).value=g[key]||"");selectedTags=[...(g.tags||[])];renderTags();(g.ratings||[]).forEach((r,i)=>{if(r.value){const radio=$(`r${i}_${r.value}`);if(radio)radio.checked=true}});updateOverallScore();$("characterEntries").innerHTML="";const chars=parseCharacters(g.characters||"");if(chars.length)chars.forEach(ch=>addCharacterEntry(ch));else addCharacterEntry();$("editorTitle").textContent="作品を編集";page("editor")};
+window.editGame=id=>{const g=games.find(x=>x.id===id);if(!g)return;resetForm();refreshOptions();Object.entries({gameId:"id",title:"title",brand:"brand",platform:"platform",year:"year",purchase:"purchase",status:"status",startDate:"startDate",clearDate:"clearDate",url:"url",summary:"summary",good:"good",bad:"bad",overall:"overall",characters:"characters",spoilers:"spoilers"}).forEach(([field,key])=>$(field).value=g[key]||"");selectedTags=[...(g.tags||[])];renderTags();(g.ratings||[]).forEach((r,i)=>{if(r.value){const radio=$(`r${i}_${r.value}`);if(radio)radio.checked=true}});updateOverallScore();if($("characterEntries"))if($("characterEntries"))$("characterEntries").innerHTML="";const chars=parseCharacters(g.characters||"");if(chars.length)chars.forEach(ch=>addCharacterEntry(ch));else addCharacterEntry();$("editorTitle").textContent="作品を編集";page("editor")};
 $("editGame").onclick=()=>editGame(currentDetail);$("backLibrary").onclick=()=>page("library");
 function exportPNG(){
 const g=games.find(x=>x.id===currentDetail);if(!g)return;
@@ -334,7 +334,18 @@ ctx.fillStyle="#a36f7d";ctx.font=`24px ${sans}`;ctx.fillText("NOTES & MEMORIES",
 let ry=175;function section(title,text){ctx.fillStyle="#a96f7e";ctx.font=`30px ${serif}`;ctx.fillText(title,1290,ry);ry+=42;ctx.fillStyle="#51444a";ry=wrap(text,1290,ry,950,36,6,`26px ${serif}`)+35;ctx.strokeStyle="#e6d6db";ctx.beginPath();ctx.moveTo(1290,ry-15);ctx.lineTo(2250,ry-15);ctx.stroke()}
 section("GOOD POINTS",g.good);section("POINTS TO NOTE",g.bad);section("OVERALL IMPRESSION",g.overall);section("CHARACTERS",g.characters);
 ctx.fillStyle="#a36f7d";ctx.font=`20px ${sans}`;ctx.fillText("PERSONAL ARCHIVE · SPOILERS EXCLUDED",1290,1400);
-const a=document.createElement("a");a.download=(g.title||"otome-review").replace(/[\\/:*?"<>|]/g,"_")+"_review.png";a.href=c.toDataURL("image/png");a.click()
+const filename=(g.title||"otome-review").replace(/[\\/:*?"<>|]/g,"_")+"_review.png";
+c.toBlob(blob=>{
+ if(!blob){alert("画像を作成できませんでした。もう一度お試しください。");return;}
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ a.style.display="none";
+ document.body.appendChild(a);
+ a.click();
+ setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},30000);
+}, "image/png");
 }
 $("exportPng").onclick=exportPNG;
 $("backup").onclick=()=>{const blob=new Blob([JSON.stringify({version:1,games},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="otome-archive-backup.json";a.click();URL.revokeObjectURL(a.href)};
@@ -347,16 +358,16 @@ let selectedTags = [];
 function refreshOptions(){
  const fromGames=[...new Set(games.map(g=>g.brand).filter(Boolean))];
  brandOptions=[...new Set([...brandOptions,...fromGames])];
- $("brand").innerHTML='<option value="">選択してください</option>'+brandOptions.map(b=>`<option>${esc(b)}</option>`).join("");
+ if($("brand"))if($("brand"))$("brand").innerHTML='<option value="">選択してください</option>'+brandOptions.map(b=>`<option>${esc(b)}</option>`).join("");
  const fromTags=[...new Set(games.flatMap(g=>g.tags||[]))];
  tagOptions=[...new Set([...tagOptions,...fromTags])];
- $("tagPicker").innerHTML='<option value="">タグを選択</option>'+tagOptions.map(t=>`<option>${esc(t)}</option>`).join("");
+ if($("tagPicker"))if($("tagPicker"))$("tagPicker").innerHTML='<option value="">タグを選択</option>'+tagOptions.map(t=>`<option>${esc(t)}</option>`).join("");
  localStorage.setItem("otomeArchiveBrands",JSON.stringify(brandOptions));
  localStorage.setItem("otomeArchiveTags",JSON.stringify(tagOptions));
 }
 function renderTags(){
  $("tags").value=selectedTags.join(", ");
- $("selectedTags").innerHTML=selectedTags.map(t=>`<button type="button" class="tag" data-tag="${esc(t)}">${esc(t)} ×</button>`).join("");
+ if($("selectedTags"))if($("selectedTags"))$("selectedTags").innerHTML=selectedTags.map(t=>`<button type="button" class="tag" data-tag="${esc(t)}">${esc(t)} ×</button>`).join("");
  $("selectedTags").querySelectorAll("button").forEach(b=>b.onclick=()=>{selectedTags=selectedTags.filter(t=>t!==b.dataset.tag);renderTags()});
 }
 $("brand").addEventListener("focus",refreshOptions);
