@@ -302,7 +302,7 @@ function card(g){return `<article class="card"><div class="eyebrow">${esc(g.bran
 window.deleteGame=id=>{const g=games.find(x=>x.id===id);if(!g)return;if(!confirm(`「${g.title}」の記録を削除しますか？\nこの操作は元に戻せません。`))return;games=games.filter(x=>x.id!==id);save();if(currentDetail===id){currentDetail=null;page("library")} };
 function renderAll(){
 if($("stats"))$("stats").innerHTML=`<span>作品数　<strong>${games.length}</strong></span><span>レビュー済み　<strong>${games.filter(g=>g.score).length}</strong></span><span>クリア済み　<strong>${games.filter(g=>["コンプリート"].includes(g.status)).length}</strong></span>`;
-$("recent").innerHTML=games.slice(0,3).map(card).join("")||'<div class="empty">まだ作品がありません。最初の1本を登録しよう。</div>';
+if($("recent"))$("recent").innerHTML=games.slice(0,3).map(card).join("")||'<div class="empty">まだ作品がありません。最初の1本を登録しよう。</div>';
 let q=($("search")?.value||"").toLowerCase(),st=$("statusFilter")?.value||"",sort=$("sort")?.value||"new";
 let list=games.filter(g=>(!st||g.status===st)&&[g.title,g.brand,g.platform,g.characters,(g.tags||[]).join(" ")].join(" ").toLowerCase().includes(q));
 if(sort==="title")list.sort((a,b)=>a.title.localeCompare(b.title,"ja"));if(sort==="score")list.sort((a,b)=>(b.score||0)-(a.score||0));
